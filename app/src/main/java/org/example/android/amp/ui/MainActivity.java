@@ -14,12 +14,17 @@ import android.view.MenuItem;
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.example.android.amp.R;
-import org.example.android.amp.util.pref.PrefUtils;
+import org.example.android.amp.api.GoogleMusicRxApi;
 
 import java.util.concurrent.TimeUnit;
 
+import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
+import retrofit2.Retrofit;
+import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory;
+import retrofit2.converter.gson.GsonConverterFactory;
+import timber.log.Timber;
 
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -32,11 +37,37 @@ public class MainActivity extends BaseActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://storage.googleapis.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
+                .build();
+
+        GoogleMusicRxApi service = retrofit.create(GoogleMusicRxApi.class);
+
         RxView.clicks(findViewById(R.id.fab))
                 .throttleFirst(2000, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.io())
+                .flatMap(integer -> service.getMusicListResult())
+                .flatMap(musicListResult -> Observable.fromIterable(musicListResult.getMusic()))
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(integer -> showToast(String.format("isLogin: %s", PrefUtils.isUserLogin())));
+                .subscribe(music -> {
+                    Timber.e("Music title: %s", music.getTitle());
+                    /*
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl("http://storage.googleapis.com/")
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+
+                    GoogleMusicApi service = retrofit.create(GoogleMusicApi.class);
+
+                    Response<MusicListResult> response = service.getMusicListResult().execute();
+                    MusicListResult musicListResult = response.body();
+                    for (Music music : musicListResult.getMusic()) {
+                        Timber.e("Music title: %s", music.getTitle());
+                    }
+                    */
+                });
 
                 /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
