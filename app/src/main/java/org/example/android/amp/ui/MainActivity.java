@@ -1,29 +1,27 @@
-package org.example.android.amp;
+package org.example.android.amp.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
-import org.example.android.amp.model.User;
-import org.example.android.amp.util.db.UserDbUtils;
+import org.example.android.amp.R;
+import org.example.android.amp.util.pref.PrefUtils;
 
 import java.util.concurrent.TimeUnit;
 
-import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
-import timber.log.Timber;
 
-public class MainActivity extends AppCompatActivity
+public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     @SuppressLint("CheckResult")
@@ -37,18 +35,8 @@ public class MainActivity extends AppCompatActivity
         RxView.clicks(findViewById(R.id.fab))
                 .throttleFirst(2000, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.io())
-                .map(integer -> 2)
-                .flatMap(integer -> UserDbUtils.findByUsername("sunshow@gmail.com"))
                 .subscribeOn(AndroidSchedulers.mainThread())
-                .subscribe(user -> Timber.e("first name=%s, last name=%s",
-                        user.getFirstName(), user.getLastName()));
-
-            /*
-            UserEntity userEntity = new UserEntity("sunshow@gmail.com",
-                    "123456", "Hanxiao", "Lu");
-
-            userDao.insertAll(userEntity);
-            */
+                .subscribe(integer -> showToast(String.format("isLogin: %s", PrefUtils.isUserLogin())));
 
                 /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
@@ -105,17 +93,10 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.navigation_me) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
-
-        } else if (id == R.id.nav_share) {
-
-        } else if (id == R.id.nav_send) {
+            startActivity(new Intent(MainActivity.this, LoginActivity.class));
+        } else if (id == R.id.navigation_allmusic) {
 
         }
 
