@@ -1,8 +1,7 @@
 package org.example.android.amp;
 
-import android.arch.persistence.room.Room;
+import android.annotation.SuppressLint;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -12,15 +11,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import org.example.android.amp.db.dao.UserDao;
-import org.example.android.amp.db.database.AppDatabase;
-import org.example.android.amp.db.entity.UserEntity;
+import com.jakewharton.rxbinding2.view.RxView;
 
+import org.example.android.amp.model.User;
+import org.example.android.amp.util.db.UserDbUtils;
+
+import java.util.concurrent.TimeUnit;
+
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
+    @SuppressLint("CheckResult")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -28,14 +34,14 @@ public class MainActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(view -> {
-            AppDatabase db = Room
-                    .databaseBuilder(getApplicationContext(), AppDatabase.class, "database")
-                    .allowMainThreadQueries()
-                    .build();
-
-            UserDao userDao = db.getUserDao();
+        RxView.clicks(findViewById(R.id.fab))
+                .throttleFirst(2000, TimeUnit.MILLISECONDS)
+                .observeOn(Schedulers.io())
+                .map(integer -> 2)
+                .flatMap(integer -> UserDbUtils.findByUsername("sunshow@gmail.com"))
+                .subscribeOn(AndroidSchedulers.mainThread())
+                .subscribe(user -> Timber.e("first name=%s, last name=%s",
+                        user.getFirstName(), user.getLastName()));
 
             /*
             UserEntity userEntity = new UserEntity("sunshow@gmail.com",
@@ -43,17 +49,11 @@ public class MainActivity extends AppCompatActivity
 
             userDao.insertAll(userEntity);
             */
-            UserEntity userEntity = userDao.getByUsername("sunshow@gmail.com");
-            if (userEntity != null) {
-                Timber.e("first name=%s, last name=%s",
-                        userEntity.getFirstName(), userEntity.getLastName());
-            }
 
                 /*
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
                 */
-        });
 
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
