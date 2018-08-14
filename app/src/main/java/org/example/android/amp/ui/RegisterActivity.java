@@ -1,6 +1,5 @@
 package org.example.android.amp.ui;
 
-import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.EditText;
@@ -11,7 +10,6 @@ import org.example.android.amp.model.User;
 import org.example.android.amp.util.db.UserDbUtils;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
@@ -35,11 +33,8 @@ public class RegisterActivity extends BaseActivity {
     EditText etFamilyName;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
-
-        ButterKnife.bind(this);
+    protected int getLayoutRes() {
+        return R.layout.activity_register;
     }
 
     @OnClick({R.id.new_user_register, R.id.new_user_back})

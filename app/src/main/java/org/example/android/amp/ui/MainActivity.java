@@ -1,25 +1,34 @@
 package org.example.android.amp.ui;
 
 import android.annotation.SuppressLint;
+import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
 import org.example.android.amp.R;
-import org.example.android.amp.api.GoogleMusicRxApi;
-import org.example.android.amp.app.AmpApp;
 import org.example.android.amp.data.MusicDataProvider;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 import timber.log.Timber;
@@ -27,11 +36,21 @@ import timber.log.Timber;
 public class MainActivity extends BaseActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
-    @SuppressLint("CheckResult")
+    @BindView(R.id.rv_group_name)
+    RecyclerView mRecyclerView;
+
+    MainRecycleViewAdapter mRecycleViewAdapter;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    protected int getLayoutRes() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    @SuppressLint("CheckResult")
+    protected void initView() {
+        super.initView();
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -55,6 +74,28 @@ public class MainActivity extends BaseActivity
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        List<MainDetailViewItem> viewItemList = new ArrayList<>();
+        {
+            MainDetailViewItem viewItem = new MainDetailViewItem();
+            viewItem.title = "Genres";
+            viewItem.detail = "Songs by genre";
+            viewItemList.add(viewItem);
+        }
+
+        {
+            MainDetailViewItem viewItem = new MainDetailViewItem();
+            viewItem.title = "Genres";
+            viewItem.detail = "Songs by genre";
+            viewItemList.add(viewItem);
+        }
+
+        mRecycleViewAdapter = new MainRecycleViewAdapter(this, viewItemList);
+
+        mRecyclerView.setAdapter(mRecycleViewAdapter);
+
+        final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
+        mRecyclerView.setLayoutManager(linearLayoutManager);
     }
 
     @Override
@@ -107,5 +148,67 @@ public class MainActivity extends BaseActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+
+    class MainDetailViewItem {
+        String title;
+
+        String detail;
+    }
+
+    class MainRecycleViewAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+
+        private List<MainDetailViewItem> viewItemList;
+
+        protected LayoutInflater mLayoutInflater;
+
+        MainRecycleViewAdapter(Context context, @NonNull List<MainDetailViewItem> viewItemList) {
+            this.viewItemList = viewItemList;
+            this.mLayoutInflater = LayoutInflater.from(context);
+        }
+
+        @NonNull
+        @Override
+        public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup viewGroup, int viewType) {
+            View view = mLayoutInflater.inflate(R.layout.item_detail_main, viewGroup, false);
+
+            return new MainDetailViewHolder(view);
+        }
+
+        @Override
+        public void onBindViewHolder(@NonNull RecyclerView.ViewHolder viewHolder, int i) {
+            MainDetailViewHolder holder = (MainDetailViewHolder) viewHolder;
+
+            MainDetailViewItem viewItem = viewItemList.get(i);
+
+            holder.tvTitle.setText(viewItem.title);
+            holder.tvDetail.setText(viewItem.detail);
+
+            holder.itemView.setOnClickListener(v -> {
+                Timber.e("Clicked");
+                startActivity(new Intent(MainActivity.this, GenreListActivity.class));
+            });
+        }
+
+        @Override
+        public int getItemCount() {
+            return viewItemList.size();
+        }
+
+    }
+
+    class MainDetailViewHolder extends RecyclerView.ViewHolder {
+
+        @BindView(R.id.tv_title)
+        TextView tvTitle;
+
+        @BindView(R.id.tv_detail)
+        TextView tvDetail;
+
+        public MainDetailViewHolder(View itemView) {
+            super(itemView);
+            ButterKnife.bind(this, itemView);
+        }
+
     }
 }
