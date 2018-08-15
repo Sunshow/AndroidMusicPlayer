@@ -55,10 +55,11 @@ public class MainActivity extends BaseActivity
         setSupportActionBar(toolbar);
 
         RxView.clicks(findViewById(R.id.fab))
+                .subscribeOn(AndroidSchedulers.mainThread())
                 .throttleFirst(2000, TimeUnit.MILLISECONDS)
                 .observeOn(Schedulers.io())
                 .flatMap(integer -> MusicDataProvider.getGenreList())
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(genre -> Timber.e("Music genre: %s", genre));
 
                 /*

@@ -52,10 +52,10 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 Observable.just(1)
-                        .observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io())
                         .flatMap(integer -> UserDbUtils.findByUsername(username))
                         .defaultIfEmpty(new User())
-                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(user -> {
                             if (user.getUsername() != null) {
                                 // 用户存在判断登录

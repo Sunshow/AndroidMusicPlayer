@@ -53,7 +53,7 @@ public class GenreListActivity extends BaseActivity {
         super.onResume();
 
         Observable.just(1)
-                .observeOn(Schedulers.io())
+                .subscribeOn(Schedulers.io())
                 .flatMap(integer -> MusicDataProvider.getGenreList())
                 .map(genreList -> {
                     List<GenreDetailViewItem> viewItemList = new ArrayList<>();
@@ -65,12 +65,10 @@ public class GenreListActivity extends BaseActivity {
                     }
                     return viewItemList;
                 })
-                .subscribeOn(AndroidSchedulers.mainThread())
+                .observeOn(AndroidSchedulers.mainThread())
                 .subscribe(viewItemList -> {
-                    runOnUiThread(() -> {
-                        mRecycleViewAdapter.setViewItemList(viewItemList);
-                        mRecycleViewAdapter.notifyDataSetChanged();
-                    });
+                    mRecycleViewAdapter.setViewItemList(viewItemList);
+                    mRecycleViewAdapter.notifyDataSetChanged();
                 });
 
     }

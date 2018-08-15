@@ -63,7 +63,7 @@ public class RegisterActivity extends BaseActivity {
                 }
 
                 Observable.just(1)
-                        .observeOn(Schedulers.io())
+                        .subscribeOn(Schedulers.io())
                         .flatMap(integer -> UserDbUtils.findByUsername(username))
                         .defaultIfEmpty(new User())
                         .flatMap(user -> {
@@ -80,7 +80,7 @@ public class RegisterActivity extends BaseActivity {
                                 return Observable.just(new User());
                             }
                         })
-                        .subscribeOn(AndroidSchedulers.mainThread())
+                        .observeOn(AndroidSchedulers.mainThread())
                         .subscribe(user -> {
                             if (user.getUsername() != null) {
                                 showToast("注册成功");
