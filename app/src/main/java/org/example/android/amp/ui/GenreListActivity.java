@@ -6,6 +6,7 @@ import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -38,6 +39,12 @@ public class GenreListActivity extends BaseActivity {
     @Override
     protected void initView() {
         super.initView();
+
+        setTitle("Genre List");
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         mRecycleViewAdapter = new GenreRecycleViewAdapter(this, new ArrayList<>());
 
@@ -72,6 +79,19 @@ public class GenreListActivity extends BaseActivity {
                 });
 
     }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
 
     class GenreDetailViewItem {
         String title;
