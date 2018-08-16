@@ -2,11 +2,11 @@ package org.example.android.amp.ui;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -37,14 +37,13 @@ public class GenreListActivity extends BaseActivity {
     }
 
     @Override
+    protected String getCustomTitle() {
+        return "Genre List";
+    }
+
+    @Override
     protected void initView() {
         super.initView();
-
-        setTitle("Genre List");
-
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        }
 
         mRecycleViewAdapter = new GenreRecycleViewAdapter(this, new ArrayList<>());
 
@@ -79,19 +78,6 @@ public class GenreListActivity extends BaseActivity {
                 });
 
     }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle presses on the action bar items
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
-    }
-
 
     class GenreDetailViewItem {
         String title;
@@ -133,6 +119,9 @@ public class GenreListActivity extends BaseActivity {
 
             holder.itemView.setOnClickListener(v -> {
                 Timber.e("Clicked");
+                Intent intent = new Intent(GenreListActivity.this, MusicListActivity.class);
+                intent.putExtra(MusicListActivity.ARG_GENRE, viewItem.title);
+                startActivity(intent);
             });
         }
 

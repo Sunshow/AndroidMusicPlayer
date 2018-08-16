@@ -7,7 +7,7 @@ import retrofit2.http.GET;
 
 public interface GoogleMusicApi {
 
-    @GET("automotive-media/music.json")
+    @GET("music.json")
     Call<MusicListResult> getMusicListResult();
 
 }

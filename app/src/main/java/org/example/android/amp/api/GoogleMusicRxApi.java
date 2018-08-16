@@ -8,7 +8,7 @@ import retrofit2.http.GET;
 
 public interface GoogleMusicRxApi {
 
-    @GET("automotive-media/music.json")
+    @GET("music.json")
     Observable<MusicListResult> getMusicListResult();
 
 }

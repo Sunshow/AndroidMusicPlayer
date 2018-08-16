@@ -4,9 +4,8 @@ import android.os.Bundle;
 import android.support.annotation.LayoutRes;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MenuItem;
 import android.widget.Toast;
-
-import org.example.android.amp.R;
 
 import butterknife.ButterKnife;
 
@@ -26,8 +25,28 @@ public abstract class BaseActivity extends AppCompatActivity {
     @LayoutRes
     abstract protected int getLayoutRes();
 
-    protected void initView() {
+    protected String getCustomTitle() {
+        return "";
+    }
 
+    protected void initView() {
+        setTitle(getCustomTitle());
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     protected void showToast(String message) {

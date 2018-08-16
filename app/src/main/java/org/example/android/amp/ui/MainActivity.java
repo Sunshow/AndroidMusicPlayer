@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.jakewharton.rxbinding2.view.RxView;
 
+import org.example.android.amp.BuildConfig;
 import org.example.android.amp.R;
 import org.example.android.amp.data.MusicDataProvider;
 
@@ -44,6 +45,11 @@ public class MainActivity extends BaseActivity
     @Override
     protected int getLayoutRes() {
         return R.layout.activity_main;
+    }
+
+    @Override
+    protected String getCustomTitle() {
+        return getString(R.string.app_name);
     }
 
     @Override
